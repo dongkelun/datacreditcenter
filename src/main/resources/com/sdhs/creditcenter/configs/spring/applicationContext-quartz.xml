@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 定时任务 -->
+	<bean lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="rsh_simpleTrigger1" />
+				<ref bean="orderTrigger" />
+				<ref bean="idCardTrigger" />
+			</list>
+		</property>
+	</bean>
+	<!-- 随spring启动立即执行 -->
+	<bean id="rsh_simpleTrigger1" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">  
+        <property name="jobDetail" ref="doIdCardJob" />  
+        <property name="startDelay" value="500" />  
+        <property name="repeatInterval" value="0" />  
+        <property name="repeatCount" value="0" />  
+    </bean>  
+	<!-- 订单 -->
+	<bean id="orderTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="doOrderJob" />
+		<property name="cronExpression" value="${analysis.order}" />
+	</bean>
+	<bean id="doOrderJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="order" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<!-- 身份证 -->
+	<bean id="idCardTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="doIdCardJob" />
+		<property name="cronExpression" value="${analysis.idCard}" />
+	</bean>
+	<bean id="doIdCardJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="idCard" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<!-- 身份证地区 -->
+	<bean id="idCardTriggerRegion" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="doIdCardRegionJob" />
+		<property name="cronExpression" value="${analysis.idCard}" />
+	</bean>
+	<bean id="doIdCardRegionJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="idCardRegion" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+
+</beans>

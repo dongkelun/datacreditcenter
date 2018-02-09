@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!--tomcat jdbc pool数据源配置 -->
+	<bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+		<property name="poolProperties">
+			<bean class="org.apache.tomcat.jdbc.pool.PoolProperties">
+				<property name="driverClassName" value="${db.driver}" />
+				<property name="url" value="${db.url}" />
+				<property name="username" value="${db.username}" />
+				<property name="password" value="${db.password}" />
+				<property name="jmxEnabled" value="true" />
+				<property name="defaultAutoCommit" value="true" />
+				<property name="testWhileIdle" value="true" />
+				<property name="validationInterval" value="30000" />
+				<property name="validationQuery" value="SELECT 1 FROM dual" />
+				<property name="timeBetweenEvictionRunsMillis" value="30000" />
+				<property name="maxActive" value="${db.maxPoolSize}" />
+				<property name="maxIdle" value="${db.maxPoolSize}" />
+				<property name="initialSize" value="${db.minPoolSize}" />
+				<property name="maxWait" value="10000" />
+				<property name="minEvictableIdleTimeMillis" value="30000" />
+				<property name="minIdle" value="${db.minPoolSize}" />
+				<property name="removeAbandoned" value="true" />
+				<property name="removeAbandonedTimeout" value="90" />
+				<property name="logAbandoned" value="true" />
+				<property name="jdbcInterceptors"
+					value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="dataSource_mysql" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+		<property name="poolProperties">
+			<bean class="org.apache.tomcat.jdbc.pool.PoolProperties">
+				<property name="driverClassName" value="${db.driver1}" />
+				<property name="url" value="${db.url1}" />
+				<property name="username" value="${db.username1}" />
+				<property name="password" value="${db.password1}" />
+				<property name="jmxEnabled" value="true" />
+				<property name="defaultAutoCommit" value="true" />
+				<property name="testWhileIdle" value="true" />
+				<property name="validationInterval" value="30000" />
+				<property name="validationQuery" value="SELECT 1 FROM dual" />
+				<property name="timeBetweenEvictionRunsMillis" value="30000" />
+				<property name="maxActive" value="${db.maxPoolSize}" />
+				<property name="maxIdle" value="${db.maxPoolSize}" />
+				<property name="initialSize" value="${db.minPoolSize}" />
+				<property name="maxWait" value="10000" />
+				<property name="minEvictableIdleTimeMillis" value="30000" />
+				<property name="minIdle" value="${db.minPoolSize}" />
+				<property name="removeAbandoned" value="true" />
+				<property name="removeAbandonedTimeout" value="90" />
+				<property name="logAbandoned" value="true" />
+				<property name="jdbcInterceptors"
+					value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer" />
+			</bean>
+		</property>
+	</bean>
+
+</beans>

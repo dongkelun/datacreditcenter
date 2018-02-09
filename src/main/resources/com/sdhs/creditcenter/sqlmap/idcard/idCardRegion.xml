@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="idCardRegion">
+	<select id="getRegion" resultClass="java.util.HashMap">
+     SELECT * FROM ID_CARD_REGION
+	</select>
+	
+	<update id="updateRegion" parameterClass="java.util.HashMap">
+		UPDATE ID_CARD_REGION SET PROVINCE=#province#,CITY=#city#,COUNTRY=#country# WHERE CODE=#code#
+	</update>
+</sqlMap>

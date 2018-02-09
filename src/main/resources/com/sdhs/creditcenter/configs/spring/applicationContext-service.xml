@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd 
+    http://www.springmodules.org/validation/bean/validator http://www.springmodules.org/validation/bean/validator.xsd ">
+
+	<!-- ============================================================= -->
+	<!-- AOP transaction definition -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="do*" propagation="REQUIRED" rollback-for="java.lang.Exception"
+				isolation="DEFAULT" />
+			<tx:method name="*" propagation="REQUIRED" isolation="DEFAULT" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- ============================================================= -->
+	<!-- aspect bean def -->
+	<aop:config>
+		<aop:pointcut id="doPointCut" expression="execution(* *..*ServiceImpl.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="doPointCut" />
+	</aop:config>
+	<!-- ============================================================= -->
+	<!-- 批处理执行service -->
+	<!-- <bean id="batchServiceImpl"
+		class="com.jiuyu.batchServer.bussiness.system.service.BatchServiceImpl">
+		
+	</bean> -->
+
+	<!-- ************************************************************************************************ -->
+	
+</beans>

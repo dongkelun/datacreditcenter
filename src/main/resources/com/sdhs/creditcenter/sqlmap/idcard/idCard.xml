@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="idCard">
+
+	
+	<select id="getDBS" resultClass="java.util.HashMap">
+		SELECT * FROM DBS
+	</select>
+	<select id="getRegionName" resultClass="java.util.HashMap">
+		SELECT * FROM
+		ID_CARD_REGION WHERE CODE=#code#
+	</select>
+	<select id="getId" resultClass="java.util.HashMap">
+		SELECT DISTINCT(CERT_NO) FROM
+		DK_CONTRACT_INFO WHERE CERT_NO IS NOT NULL
+	</select>
+	<insert id="insertCard" parameterClass="java.util.HashMap">
+		INSERT INTO
+		PAYADM.ID_CARD_INFO
+		(ID, REGION, YEAR, AGE, BIRTH, SEX,PROVINCE,CITY,COUNTRY)
+		VALUES(#id#,#region#,#year#,#age#,#birth#,#sex#,#province#,#city#,#country#)
+	</insert>
+	<delete id="deleteCard">
+	 DELETE FROM ID_CARD_INFO
+	</delete>
+
+</sqlMap>
