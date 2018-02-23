@@ -5,92 +5,16 @@
 
 <sqlMap namespace="order">
 	
-	<update id="changeStlmDate">
-		update TBL_SYS_CTRL
-		 set 
-			SDAY=NEXT_DATE,
-			PREV_PREV_STMT_DAY=PREV_STMT_DAY,
-			PREV_STMT_DAY=SDAY,
-			BATCH_ST='09',
-			NEXT_DATE=to_char(to_date(NEXT_DATE,'YYYYMMDD')+1,'YYYYMMDD'),
-			DAY_CUT_UPDT=to_char(current_timestamp,'YYYYMMDDHH24MISS'),
-			UPDT_DT=to_char(current_timestamp,'YYYYMMDDHH24MISS')
-	</update>
 	<delete id="delete">
 	 DELETE FROM DK_ORDER_RESULT_DKL
 	</delete>
-	<select id="selectTest" resultClass="String">
-	 WITH A AS
-	 (SELECT COUNT(1) AS NUM,SIGN_OBJ_ID,MER_BILL_NO FROM DK_ORDER_DETAIL WHERE SIGN_OBJ_ID IS NOT NULL AND MER_BILL_NO IS NOT NULL GROUP BY  SIGN_OBJ_ID,MER_BILL_NO)
-	 SELECT 
-	 		SIGN_OBJ_ID,
-	 		SUM(CASE WHEN NUM=1 THEN 1 ELSE 0 END) AS NUM1,
-	 		SUM(CASE WHEN NUM=2 THEN 1 ELSE 0 END) AS NUM2, 
-	 		SUM(CASE WHEN NUM=3 THEN 1 ELSE 0 END) AS NUM3,
-	 		SUM(CASE WHEN NUM>3 THEN 1 ELSE 0 END) AS NUM4 
-	 FROM A
-	 GROUP BY  SIGN_OBJ_ID
-	</select>
-	<select id="testmap" resultClass="java.util.HashMap">
-     WITH A AS
-	 (SELECT COUNT(1) AS NUM,SIGN_OBJ_ID,MER_BILL_NO FROM DK_ORDER_DETAIL WHERE SIGN_OBJ_ID IS NOT NULL AND MER_BILL_NO IS NOT NULL GROUP BY  SIGN_OBJ_ID,MER_BILL_NO)
-	 SELECT 
-	 		SIGN_OBJ_ID,
-	 		SUM(CASE WHEN NUM=1 THEN 1 ELSE 0 END) AS NUM1,
-	 		SUM(CASE WHEN NUM=2 THEN 1 ELSE 0 END) AS NUM2, 
-	 		SUM(CASE WHEN NUM=3 THEN 1 ELSE 0 END) AS NUM3,
-	 		SUM(CASE WHEN NUM>3 THEN 1 ELSE 0 END) AS NUM4 
-	 FROM A
-	 GROUP BY  SIGN_OBJ_ID
-	</select>
-	
-	<update id="updateStlmBatch">
-	 update TBL_SYS_CTRL set BATCH_ST='02'
-	</update>
-	
-	<select id="selectRealCashDay" parameterClass="String" resultClass="String">
-		select c.REAL_DAY as realDay
-		 from TBL_CASH_REAL_CASH_DAY c
-		 where c.file_day=#fileDay#
-	</select>
-	
-	<select id="selectStlmAcctFile" resultClass="map">
-	 	select  	  	 StlmAcctFile.FILE_SEQ as fileSeq,
-	 	 	StlmAcctFile.ORG_CODE as orgCode,
-	 	  	 StlmAcctFile.SYS_TM as sysTm,
-	 	  	 StlmAcctFile.SDAY as sday,
-	 	  	 StlmAcctFile.TXN_CODE as txnCode,
-	 	  	 StlmAcctFile.CHNL_CODE as chnlCode,
-	 	  	 StlmAcctFile.TXN_DATE as txnDate,
-	 	  	 StlmAcctFile.TXN_SEQ as txnSeq,
-	 	  	 StlmAcctFile.STLM_DATE as stlmDate,
-	 	  	 StlmAcctFile.RSP_CODE as rspCode,
-	 	  	 StlmAcctFile.IP as ip,
-	 	  	 StlmAcctFile.PORT as port,
-	 	  	 StlmAcctFile.FILE_NAME as fileName,
-	 	  	 StlmAcctFile.DOWNLOAD_STAT as downloadStat,
-	 	  	 StlmAcctFile.ACCT_STAT as acctStat
-	 	  from TBL_STLM_ACCT_FILE  StlmAcctFile
-	 	  	<dynamic prepend="where">
-			 	<isNotNull property="downloadStat" prepend="and"> DOWNLOAD_STAT = #downloadStat# </isNotNull>
-				<isNotNull property="acctStat" prepend="and"> ACCT_STAT = #acctStat# </isNotNull>
-				<isNotNull property="fileName" prepend="and"> FILE_NAME = #fileName# </isNotNull>
-			</dynamic>
- 	  	 order by StlmAcctFile.FILE_SEQ 
- 	 </select>
- 	 
- 	 <update id="updateStlmAcctFile" parameterClass="map">
- 	 	update TBL_STLM_ACCT_FILE
- 	  	 <dynamic prepend="set">
- 	  	  	 <isNotNull property="downloadStat" prepend=",">DOWNLOAD_STAT = #downloadStat# </isNotNull>
- 	  	 	<isNotNull property="acctStat" prepend=",">ACCT_STAT = #acctStat# </isNotNull>
- 	  	 </dynamic>
- 	  	  where  	FILE_NAME = #fileName#  
- 	 </update>
- 	 
  	 <insert id="insertResult" parameterClass="java.util.HashMap">
 		INSERT INTO DK_ORDER_RESULT_DKL
 		(SIGN_OBJ_ID, NUM1, NUM2, NUM3, NUM4, NUM_FAIL, TOTAL_NUM, SUM_AMT, AVG_AMT, MAX_AMT, MIN_AMT)
+		VALUES(#signObjId#, #num1#, #num2#, #num3#, #num4#, #numFail#, #totalNum#, #sumAmt#, 
+		#avgAmt#, #maxAmt#, #minAmt#)
+ 	 </insert>
+ 	 <select id="getInfo" resultClass="java.util.HashMap">
 		SELECT 
 				OUTTER_A.SIGN_OBJ_ID,
 		        NVL(NUM1,0) AS NUM1,
@@ -132,17 +56,5 @@
 		) OUTTER_B
 		
 		ON OUTTER_A.SIGN_OBJ_ID = OUTTER_B.SIGN_OBJ_ID
- 	 </insert>
- 	 <!-- 修改所有批处理步骤到未处理 -->
- 	 <update id="updateAllStlmBatchToUnDeal">
- 	     update TBL_STLM_BATCH_STATUS set PROC_ST = '0' , UPD_DT = to_char(current_timestamp,'YYYYMMDDHH24MISS')
- 	 </update>
- 	 <update id="updateTerminalStatus">
- 	     update tbl_outer_tid_ctrl set cycle_stat='1' , updatetime=to_char(current_timestamp,'YYYYMMDDHH24MISS')
- 	     
- 	 </update>
- 	 <update id="updateTerminalStatus2">
- 	     update tbl_outer_tid_ctrl_xl set cycle_stat='1' , updatetime=to_char(current_timestamp,'YYYYMMDDHH24MISS')
- 	     
- 	 </update>
+	</select>
 </sqlMap>

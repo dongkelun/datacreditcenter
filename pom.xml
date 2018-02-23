@@ -245,7 +245,7 @@
 			<version>2.1</version> <classifier>jdk15</classifier> </dependency> -->
 	</dependencies>
 	<build>
-		<finalName>cardbatch</finalName>
+		<finalName>creditcenter</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

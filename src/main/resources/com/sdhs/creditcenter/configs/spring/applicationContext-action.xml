@@ -15,4 +15,8 @@
 	<bean id="idCardRegion" class="com.sdhs.creditcenter.idcard.action.IdCardRegion">
 		<property name="sqlMapClient" ref="sqlMapClient" />
 	</bean>
+	<!-- 充值表 action -->
+	<bean id="recharge" class="com.sdhs.creditcenter.recharge.action.Recharge">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
 </beans>

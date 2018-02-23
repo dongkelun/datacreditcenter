@@ -10,5 +10,6 @@
 	<sqlMap resource="com/sdhs/creditcenter/sqlmap/order/order.xml" />
 	<sqlMap resource="com/sdhs/creditcenter/sqlmap/idcard/idCard.xml" />
 	<sqlMap resource="com/sdhs/creditcenter/sqlmap/idcard/idCardRegion.xml" />
+	<sqlMap resource="com/sdhs/creditcenter/sqlmap/recharge/recharge.xml" />
 	
 </sqlMapConfig>

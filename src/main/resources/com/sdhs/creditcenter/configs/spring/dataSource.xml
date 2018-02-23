@@ -58,5 +58,32 @@
 			</bean>
 		</property>
 	</bean>
+	<bean id="dataSource_ltch" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+		<property name="poolProperties">
+			<bean class="org.apache.tomcat.jdbc.pool.PoolProperties">
+				<property name="driverClassName" value="${db.driver_ltch}" />
+				<property name="url" value="${db.url_ltch}" />
+				<property name="username" value="${db.username_ltch}" />
+				<property name="password" value="${db.password_ltch}" />
+				<property name="jmxEnabled" value="true" />
+				<property name="defaultAutoCommit" value="true" />
+				<property name="testWhileIdle" value="true" />
+				<property name="validationInterval" value="30000" />
+				<property name="validationQuery" value="SELECT 1 FROM dual" />
+				<property name="timeBetweenEvictionRunsMillis" value="30000" />
+				<property name="maxActive" value="${db.maxPoolSize}" />
+				<property name="maxIdle" value="${db.maxPoolSize}" />
+				<property name="initialSize" value="${db.minPoolSize}" />
+				<property name="maxWait" value="10000" />
+				<property name="minEvictableIdleTimeMillis" value="30000" />
+				<property name="minIdle" value="${db.minPoolSize}" />
+				<property name="removeAbandoned" value="true" />
+				<property name="removeAbandonedTimeout" value="90" />
+				<property name="logAbandoned" value="true" />
+				<property name="jdbcInterceptors"
+					value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer" />
+			</bean>
+		</property>
+	</bean>
 
 </beans>

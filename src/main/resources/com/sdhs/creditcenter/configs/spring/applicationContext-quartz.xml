@@ -10,12 +10,13 @@
 				<ref bean="rsh_simpleTrigger1" />
 				<ref bean="orderTrigger" />
 				<ref bean="idCardTrigger" />
+				<ref bean="rechargeTrigger" />
 			</list>
 		</property>
 	</bean>
 	<!-- 随spring启动立即执行 -->
 	<bean id="rsh_simpleTrigger1" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">  
-        <property name="jobDetail" ref="doIdCardJob" />  
+        <property name="jobDetail" ref="doOrderJob" />  
         <property name="startDelay" value="500" />  
         <property name="repeatInterval" value="0" />  
         <property name="repeatCount" value="0" />  
@@ -50,6 +51,17 @@
 	<bean id="doIdCardRegionJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="idCardRegion" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<!-- 充值表-->
+	<bean id="rechargeTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="doRechargeJob" />
+		<property name="cronExpression" value="${analysis.recharge}" />
+	</bean>
+	<bean id="doRechargeJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="recharge" />
 		<property name="targetMethod" value="execute" />
 		<property name="concurrent" value="false" />
 	</bean>

@@ -18,6 +18,10 @@
 		<property name="configLocation" value="classpath:com/sdhs/creditcenter/sqlmap/sqlMapConfig.xml" />
 		<property name="dataSource" ref="dataSource_mysql" />
 	</bean>
+	<bean id="sqlMapClient_ltch" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean" >
+		<property name="configLocation" value="classpath:com/sdhs/creditcenter/sqlmap/sqlMapConfig.xml" />
+		<property name="dataSource" ref="dataSource_ltch" />
+	</bean>
 
 	<!-- <bean id="BatchDaoImpl" class="com.jiuyu.batchServer.bussiness.system.dao.BatchDaoImpl">
 		<property name="sqlMapClient" ref="sqlMapClient" />

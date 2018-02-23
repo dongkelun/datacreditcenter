@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="recharge">
+	<select id="getInfo" resultClass="java.util.HashMap">
+		SELECT 
+				CARDNO,
+				COUNT(1) AS NUM ,
+				SUM(TOTALMONEY) AS TOTAL_MONEY,
+				MAX(TOTALMONEY) AS MAX_MONEY,
+				MIN(TOTALMONEY) AS MIN_MONEY,
+				AVG(TOTALMONEY) AS AVG_MONEY 
+		FROM 
+				T_PCHARGEWASTE A,T_PCHARGEDETAIL B 
+		WHERE 
+				A.ID=B.ORDERID GROUP BY CARDNO
+	</select>
+	<delete id="delete">
+	 DELETE FROM RECHARGE_RESULT
+	</delete>
+	<insert id="insertRecharge" parameterClass="java.util.HashMap">
+	INSERT INTO RECHARGE_RESULT
+	(CARDNO, NUM, TOTAL_MONEY, MAX_MONEY, MIN_MONEY, AVG_MONEY)
+	VALUES(#cardNo#, #num#, #totalMoney#, #maxMoney#, #minMoney#, #avgMoney#)
+	</insert>
+</sqlMap>

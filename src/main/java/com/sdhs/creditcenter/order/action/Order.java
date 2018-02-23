@@ -2,6 +2,7 @@ package com.sdhs.creditcenter.order.action;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,17 +22,30 @@ public class Order extends SqlMapClientDaoSupport {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void execute() throws SQLException {
-		LOG.info("quartz start");
-		System.out.println("hello quartz ");
+		LOG.info("Order start");
 		SqlMapClient client = getSqlMapClient();
+		HashMap paraMap = new HashMap();
+
+		paraMap.put("year", 2017);
+		List<HashMap> info = client.queryForList("order.getInfo", paraMap);
 		try {
 			client.startTransaction();
 			client.getCurrentConnection().setAutoCommit(false);
 			client.delete("order.delete");
-			HashMap paraMap = new HashMap();
-			paraMap.put("year", 2017);
-			client.insert("order.insertResult", paraMap);
-
+			for (HashMap tempMap : info) {
+				paraMap.put("signObjId", tempMap.get("SIGN_OBJ_ID"));
+				paraMap.put("num1", tempMap.get("NUM1"));
+				paraMap.put("num2", tempMap.get("NUM2"));
+				paraMap.put("num3", tempMap.get("NUM3"));
+				paraMap.put("num4", tempMap.get("NUM4"));
+				paraMap.put("numFail", tempMap.get("NUM_FAIL"));
+				paraMap.put("totalNum", tempMap.get("TOTAL_NUM"));
+				paraMap.put("sumAmt", tempMap.get("SUM_AMT"));
+				paraMap.put("avgAmt", tempMap.get("AVG_AMT"));
+				paraMap.put("maxAmt", tempMap.get("MAX_AMT"));
+				paraMap.put("minAmt", tempMap.get("MIN_AMT"));
+				client.insert("order.insertResult", paraMap);
+			}
 			//测试异常
 			//System.out.println(1/0);
 			client.getCurrentConnection().commit();
@@ -42,7 +56,7 @@ public class Order extends SqlMapClientDaoSupport {
 		} finally {
 			client.endTransaction();
 		}
-		LOG.info("quartz end");
+		LOG.info("Order end");
 
 	}
 }
