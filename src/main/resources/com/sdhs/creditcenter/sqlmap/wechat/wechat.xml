@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="wechat">
+	
+	<delete id="delete">
+	DELETE FROM WECHAT_RESULT
+	</delete>
+ 	 <insert id="insertWeChat" parameterClass="java.util.HashMap">
+		INSERT INTO WECHAT_RESULT
+		(CARD_NO, NICKNAME, SEX, MOBILE, SIGN_CERNO, SIGN_NAME, 
+		NUM1, NUM2, NUM3, NUM4, TOTAL_NUM, NUM_FAIL, SUM_AMT, AVG_AMT, MAX_AMT, MIN_AMT)
+		VALUES(#card_no#, #nickname#, #sex#, #mobile#, #sign_cerno#, #sign_name#, #num1#, #num2#, 
+		#num3#, #num4#, #total_num#, #num_fail#, #sum_amt#, #avg_amt#, #max_amt#, #min_amt#)
+ 	 </insert>
+ 	 <select id="getInfo" resultClass="java.util.HashMap">
+		 SELECT 
+		OUTER_A.CARD_NO,
+		NICKNAME,
+		SEX ,
+		MOBILE,
+		SIGN_CERNO,
+		SIGN_NAME,
+		NUM1,
+		NUM2,
+		NUM3,
+		NUM4,
+		TOTAL_NUM,
+		TOTAL_NUM-NUM AS NUM_FAIL,
+		SUM_AMT,
+		AVG_AMT,
+		MAX_AMT,
+		MIN_AMT
+FROM
+(
+select CARD_NO,NICKNAME,SEX,MOBILE,SIGN_CERNO,SIGN_NAME from wc_user,wc_sign where wc_user.openid = wc_sign.openid and card_no is not null and card_no!='')
+OUTER_A,
+
+(
+SELECT 	        CARD_NO,
+		 		SUM(CASE WHEN FAIL_TIME=0 THEN 1 ELSE 0 END) AS NUM1,
+			 	SUM(CASE WHEN FAIL_TIME=1 THEN 1 ELSE 0 END) AS NUM2, 
+			 	SUM(CASE WHEN FAIL_TIME=2 THEN 1 ELSE 0 END) AS NUM3,
+			 	SUM(CASE WHEN FAIL_TIME>2 THEN 1 ELSE 0 END) AS NUM4 ,
+			 	COUNT(1) AS TOTAL_NUM,
+				SUM(LOCAL_BILL_MONEY) AS SUM_AMT, 
+			   	AVG(LOCAL_BILL_MONEY) AS AVG_AMT,
+		       	MAX(LOCAL_BILL_MONEY) AS MAX_AMT,
+		       	MIN(LOCAL_BILL_MONEY) AS MIN_AMT
+from	
+
+(select card_no,fail_time,local_bill_money from wx_bill_order where  substring(period,1,4)=2017 GROUP BY card_no,bill_id 
+	
+)a
+GROUP BY  card_no
+)OUTER_B,
+
+(
+select card_no,count(1)as num from wx_bill_order where state in('4','2') and substring(period,1,4)=2017 GROUP BY card_no 
+)OUTER_C
+WHERE OUTER_A.card_no=OUTER_B.card_no and OUTER_A.CARD_NO=OUTER_C.card_no
+	</select>
+	
+	<select id="getInfoBak">
+	SELECT 
+		OUTER_A.CARD_NO,
+		NICKNAME,
+		SEX ,
+		MOBILE,
+		SIGN_CERNO,
+		SIGN_NAME,
+		NUM1,
+		NUM2,
+		NUM3,
+		NUM4,
+		TOTAL_NUM,
+		TOTAL_NUM-NUM AS NUM_FAIL,
+		SUM_AMT,
+		AVG_AMT,
+		MAX_AMT,
+		MIN_AMT
+FROM
+(
+select CARD_NO,NICKNAME,SEX,MOBILE,SIGN_CERNO,SIGN_NAME from wc_user,wc_sign where wc_user.openid = wc_sign.openid and card_no is not null and card_no!='')
+OUTER_A,
+
+(
+SELECT 	        CARD_NO,
+		 		SUM(CASE WHEN FAIL_TIME=0 THEN 1 ELSE 0 END) AS NUM1,
+			 	SUM(CASE WHEN FAIL_TIME=1 THEN 1 ELSE 0 END) AS NUM2, 
+			 	SUM(CASE WHEN FAIL_TIME=2 THEN 1 ELSE 0 END) AS NUM3,
+			 	SUM(CASE WHEN FAIL_TIME>2 THEN 1 ELSE 0 END) AS NUM4 ,
+			 	COUNT(1) AS TOTAL_NUM,
+				SUM(LOCAL_BILL_MONEY) AS SUM_AMT, 
+			   	AVG(LOCAL_BILL_MONEY) AS AVG_AMT,
+		       	MAX(LOCAL_BILL_MONEY) AS MAX_AMT,
+		       	MIN(LOCAL_BILL_MONEY) AS MIN_AMT
+from	
+
+(select card_no,fail_time,local_bill_money from wx_bill_order where  substring(period,1,4)=2017 GROUP BY card_no,bill_id 
+	and bill_id in(
+	select bill_id from wx_bill_order where  substring(period,1,4)=2017 and state not in('4','2') and fail_time>3 GROUP BY card_no,bill_id 
+	union select bill_id from wx_bill_order where  substring(period,1,4)=2017 and state  in('4','2') GROUP BY card_no,bill_id 
+
+)
+)a
+GROUP BY  card_no
+)OUTER_B,
+
+(
+select card_no,count(1)as num from wx_bill_order where state in('4','2') and substring(period,1,4)=2017 GROUP BY card_no 
+)OUTER_C
+WHERE OUTER_A.card_no=OUTER_B.card_no and OUTER_A.CARD_NO=OUTER_C.card_no
+	</select>
+</sqlMap>

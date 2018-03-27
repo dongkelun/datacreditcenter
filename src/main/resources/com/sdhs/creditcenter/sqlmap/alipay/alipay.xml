@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="alipay">
+
+	<delete id="delete">
+	 	DELETE FROM ALIPAY_RESULT
+	</delete>
+	<insert id="insertAliPay" parameterClass="java.util.HashMap">
+		INSERT INTO ALIPAY_RESULT
+		(CARD_NO, ALI_USER_ID, NAME, REAL_NAME, CERT_NO, MOBILE, ZM_SCORE, 
+		NUM1, NUM2, NUM3, NUM4, TOTAL_NUM, NUM_FAIL, SUM_AMT, AVG_AMT, MAX_AMT, MIN_AMT)
+		VALUES(#card_no#,#ali_user_id#,#name#,#real_name#,#cert_no#,#mobile#,#zm_score#,
+		#num1#,#num2#, #num3#, #num4#, #total_num#, #num_fail#, #sum_amt#, #avg_amt#, #max_amt#, #min_amt#)
+	</insert>
+	<select id="getInfo" resultClass="java.util.HashMap">
+		
+		SELECT 
+				OUTER_A.CARD_NO,
+				OUTER_A.ALI_USER_ID,
+				OUTER_A.NAME,
+				OUTER_A.REAL_NAME,
+				OUTER_A.CERT_NO,
+				OUTER_A.MOBILE,
+				OUTER_A.ZM_SCORE,
+				NUM1,
+				NUM2,
+				NUM3,
+				NUM4,
+				TOTAL_NUM,
+				TOTAL_NUM-num as NUM_FAIL,
+				SUM_AMT,
+				AVG_AMT,
+				MAX_AMT,
+				MIN_AMT
+		FROM
+		(
+		select zhima_auth.ALI_USER_ID,NAME,REAL_NAME,zhima_auth.CERT_NO,zhima_auth.MOBILE,ZM_SCORE,CARD_TYPE,CARD_NO 
+		FROM zhima_auth,ali_user,ali_order	
+		where zhima_auth.ali_user_id = ali_user.alipay_user_id and  ali_order.ali_user_id= zhima_auth.ali_user_id and card_no is not null and card_no!=''
+		) OUTER_A,
+		
+		(
+		SELECT 	        CARD_NO,
+				 		SUM(CASE WHEN NUM=1 THEN 1 ELSE 0 END) AS NUM1,
+					 	SUM(CASE WHEN NUM=2 THEN 1 ELSE 0 END) AS NUM2, 
+					 	SUM(CASE WHEN NUM=3 THEN 1 ELSE 0 END) AS NUM3,
+					 	SUM(CASE WHEN NUM>3 THEN 1 ELSE 0 END) AS NUM4 ,
+					 	COUNT(1) AS TOTAL_NUM,
+						SUM(money) AS SUM_AMT, 
+					   	AVG(money) AS AVG_AMT,
+				       	MAX(money) AS MAX_AMT,
+				       	MIN(money) AS MIN_AMT
+		from	
+		(select count(1) as num,sum(local_bill_money)/count(1) as money,bill_order.card_no, local_bill_id
+		from bill_order ,bill_pay_flow where local_bill_id=flow_no and bill_order.card_no= bill_pay_flow.card_no and substring(period,1,4)=2017   group by bill_order.card_no,flow_no ) a
+		
+		GROUP BY  CARD_NO
+		)OUTER_B,
+		
+		(SELECT card_no,count(1) as num from (select count(1) as num,bill_order.card_no, local_bill_id
+		from bill_order ,bill_pay_flow where local_bill_id=flow_no and bill_order.card_no= bill_pay_flow.card_no and local_bill_id and state IN('4','2')
+		and bill_order.card_no is not null and bill_order.card_no!='' and substring(period,1,4)=2017
+		group by bill_order.card_no,flow_no )a group by card_no)OUTER_C
+		WHERE OUTER_A.CARD_NO=OUTER_B.CARD_NO and OUTER_A.CARD_NO=OUTER_C.CARD_NO
+	</select>
+	
+	
+	<select id="getInfoBak" resultClass="java.util.HashMap">
+		SELECT 
+				OUTER_A.CARD_NO,
+				OUTER_A.ALI_USER_ID,
+				OUTER_A.NAME,
+				OUTER_A.REAL_NAME,
+				OUTER_A.CERT_NO,
+				OUTER_A.MOBILE,
+				OUTER_A.ZM_SCORE,
+				NUM1,
+				NUM2,
+				NUM3,
+				NUM4,
+				TOTAL_NUM,
+				TOTAL_NUM-num as NUM_FAIL,
+				SUM_AMT,
+				AVG_AMT,
+				MAX_AMT,
+				MIN_AMT
+		FROM
+		(
+		select zhima_auth.ALI_USER_ID,NAME,REAL_NAME,zhima_auth.CERT_NO,zhima_auth.MOBILE,ZM_SCORE,CARD_TYPE,CARD_NO 
+		FROM zhima_auth,ali_user,ali_order	
+		where zhima_auth.ali_user_id = ali_user.alipay_user_id and  ali_order.ali_user_id= zhima_auth.ali_user_id and card_no is not null and card_no!=''
+		) OUTER_A,
+		
+		(
+		SELECT 	        CARD_NO,
+				 		SUM(CASE WHEN NUM=1 THEN 1 ELSE 0 END) AS NUM1,
+					 	SUM(CASE WHEN NUM=2 THEN 1 ELSE 0 END) AS NUM2, 
+					 	SUM(CASE WHEN NUM=3 THEN 1 ELSE 0 END) AS NUM3,
+					 	SUM(CASE WHEN NUM>3 THEN 1 ELSE 0 END) AS NUM4 ,
+					 	COUNT(1) AS TOTAL_NUM,
+						SUM(money) AS SUM_AMT, 
+					   	AVG(money) AS AVG_AMT,
+				       	MAX(money) AS MAX_AMT,
+				       	MIN(money) AS MIN_AMT
+		from	
+		(select count(1) as num,sum(local_bill_money)/count(1) as money,bill_order.card_no, local_bill_id
+		from bill_order ,bill_pay_flow where local_bill_id=flow_no and bill_order.card_no= bill_pay_flow.card_no and substring(period,1,4)=2017 and local_bill_id in (SELECT 
+						local_bill_id 
+				 FROM 
+					(
+						SELECT 
+								COUNT(1) AS NUM,
+								local_bill_id 
+						FROM  
+								bill_order ,bill_pay_flow
+						where state not IN('4','2') and local_bill_id=flow_no and bill_order.card_no= bill_pay_flow.card_no and substring(period,1,4)=2017  group by bill_order.card_no,flow_no
+					)A WHERE NUM>3 
+				 UNION 
+					SELECT 
+							local_bill_id 
+					FROM 
+							bill_order ,bill_pay_flow
+				    WHERE   
+				    		state IN('4','2')
+				    		AND local_bill_id=flow_no and substring(period,1,4)=2017)  group by bill_order.card_no,flow_no ) a
+		
+		GROUP BY  CARD_NO
+		)OUTER_B,
+		
+		(SELECT card_no,count(1) as num from (select count(1) as num,bill_order.card_no, local_bill_id
+		from bill_order ,bill_pay_flow where local_bill_id=flow_no and bill_order.card_no= bill_pay_flow.card_no and local_bill_id and state IN('4','2')
+		and bill_order.card_no is not null and bill_order.card_no!='' and substring(period,1,4)=2017
+		group by bill_order.card_no,flow_no )a group by card_no)OUTER_C
+		WHERE OUTER_A.CARD_NO=OUTER_B.CARD_NO and OUTER_A.CARD_NO=OUTER_C.CARD_NO	
+	</select>
+
+</sqlMap>

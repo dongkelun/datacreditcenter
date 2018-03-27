@@ -19,4 +19,12 @@
 	<bean id="recharge" class="com.sdhs.creditcenter.recharge.action.Recharge">
 		<property name="sqlMapClient" ref="sqlMapClient" />
 	</bean>
+	<!-- 支付宝 -->
+	<bean id="aliPay" class="com.sdhs.creditcenter.alipay.action.AliPay">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+	<!-- 微信 -->
+	<bean id="weChat" class="com.sdhs.creditcenter.wechat.action.WeChat">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
 </beans>

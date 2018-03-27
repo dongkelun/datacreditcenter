@@ -22,6 +22,10 @@
 		<property name="configLocation" value="classpath:com/sdhs/creditcenter/sqlmap/sqlMapConfig.xml" />
 		<property name="dataSource" ref="dataSource_ltch" />
 	</bean>
+	<bean id="sqlMapClient_etcmob" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean" >
+		<property name="configLocation" value="classpath:com/sdhs/creditcenter/sqlmap/sqlMapConfig.xml" />
+		<property name="dataSource" ref="dataSource_etcmob" />
+	</bean>
 
 	<!-- <bean id="BatchDaoImpl" class="com.jiuyu.batchServer.bussiness.system.dao.BatchDaoImpl">
 		<property name="sqlMapClient" ref="sqlMapClient" />

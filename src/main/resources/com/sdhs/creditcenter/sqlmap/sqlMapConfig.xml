@@ -11,5 +11,7 @@
 	<sqlMap resource="com/sdhs/creditcenter/sqlmap/idcard/idCard.xml" />
 	<sqlMap resource="com/sdhs/creditcenter/sqlmap/idcard/idCardRegion.xml" />
 	<sqlMap resource="com/sdhs/creditcenter/sqlmap/recharge/recharge.xml" />
+	<sqlMap resource="com/sdhs/creditcenter/sqlmap/alipay/alipay.xml" />
+	<sqlMap resource="com/sdhs/creditcenter/sqlmap/wechat/wechat.xml" />
 	
 </sqlMapConfig>

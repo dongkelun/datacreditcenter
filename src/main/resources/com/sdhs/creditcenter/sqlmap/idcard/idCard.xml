@@ -19,7 +19,7 @@
 	</select>
 	<insert id="insertCard" parameterClass="java.util.HashMap">
 		INSERT INTO
-		PAYADM.ID_CARD_INFO
+		ID_CARD_INFO
 		(ID, REGION, YEAR, AGE, BIRTH, SEX,PROVINCE,CITY,COUNTRY)
 		VALUES(#id#,#region#,#year#,#age#,#birth#,#sex#,#province#,#city#,#country#)
 	</insert>
